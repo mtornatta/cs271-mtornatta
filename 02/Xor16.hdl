@@ -1,7 +1,6 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/01/Xor.hdl
+// Made this file to feed 16 bit bus into
+// by Michael Tornatta
+// File name: projects/02/Xor.hdl
 
 /**
  * Exclusive-or gate 16 bit:

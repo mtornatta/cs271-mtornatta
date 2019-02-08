@@ -54,12 +54,19 @@ CHIP ALU {
    Xor16(a=x1, b=nx16, out=x2);
 
    //f(y, zy)
+   Not(in=zy,out=zynot);
+   Widen1to16(in=zynot,out=zynot16);
+   And16(a=zynot16, b=y, out=y1);
 
    //f(y1,ny)
+   Widen1to16(in=ny,out=ny16);
+   Xor16(a=y1, b=ny16, out=y2);
 
    //f(x2,f)
+   DMux16(in=x2,sel=f,a=xadd,b=xm);
 
    //f(y2,f)
+   DMux16(in=y2,sel=f,a=yadd,b=ym);
 
    //xadd+yadd
 

@@ -1,7 +1,6 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/02/Adder16.hdl
+// Made this to widen 1 bit bus into 16 bits
+// By Michael Tornatta
+// File name: projects/02/Widen1to16.hdl
 
 /**
  * Widens 1 bit bus to 16
