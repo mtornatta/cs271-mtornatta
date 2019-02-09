@@ -17,5 +17,4 @@ CHIP Bit {
     // Put your code here:
     Mux(a=data2,b=in,sel=load,out=data1);
     DFF(in=data1,out=out, out=data2);
-
 }
