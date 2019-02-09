@@ -71,10 +71,10 @@ CHIP ALU {
    And16(a=z1,b=true,out=out);
 
    //zr
-   CheckZero(in=z,out=zr);
+   CheckZero(in=z1,out=zr);
 
    //ng
-   CheckNegative(in=z,out=ng);
+   CheckNegative(in=z1,out=ng);
 
 
 }

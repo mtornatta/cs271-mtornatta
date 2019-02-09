@@ -13,5 +13,5 @@ CHIP CheckNegative {
 
     PARTS:
    // Put your code here:
-   And(a=in[0], b=true, out=out);
+   And(a=in[15], b=true, out=out);
 }
