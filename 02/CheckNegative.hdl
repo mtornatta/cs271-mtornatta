@@ -1,0 +1,17 @@
+// Made this to widen 1 bit bus into 16 bits
+// By Michael Tornatta
+// File name: projects/02/CheckNegative.hdl
+
+/**
+ * Checks if the number is negative
+ * If negative, return 1, else return 0
+ */
+
+CHIP CheckNegative {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+   // Put your code here:
+   And(a=in[0], b=true, out=out);
+}

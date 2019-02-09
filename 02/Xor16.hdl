@@ -1,6 +1,6 @@
 // Made this file to feed 16 bit bus into
 // by Michael Tornatta
-// File name: projects/02/Xor.hdl
+// File name: projects/02/Xor16.hdl
 
 /**
  * Exclusive-or gate 16 bit:

@@ -1,0 +1,42 @@
+// Checks if a 16 bit number is zero
+// by Michael Tornatta
+// File name: projects/02/CheckZero.hdl
+
+/**
+ * Checks if the number is zero
+ * Returns 1 if zero, else returns 0
+ */
+
+CHIP CheckZero {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+
+    //Level 1
+    Or(a=in[0], b=in[1], out=or0);
+    Or(a=in[2], b=in[3], out=or1);
+    Or(a=in[4], b=in[5], out=or2);
+    Or(a=in[6], b=in[7], out=or3);
+    Or(a=in[8], b=in[9], out=or4);
+    Or(a=in[10], b=in[11], out=or5);
+    Or(a=in[12], b=in[13], out=or6);
+    Or(a=in[14], b=in[15], out=or7);
+
+    //Level 2
+    Or(a=or0, b=or1, out=or8);
+    Or(a=or2, b=or3, out=or9);
+    Or(a=or4, b=or5, out=or10);
+    Or(a=or6, b=or7, out=or11);
+
+    //Level 3
+    Or(a=or8, b=or9, out=or12);
+    Or(a=or10, b=or11, out=orUnlucky);
+
+    //Level 4
+    Or(a=or12,b=orUnlucky,out=final);
+
+    //final
+    Not(in=final,out=out);
+}

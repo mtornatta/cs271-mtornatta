@@ -45,40 +45,36 @@ CHIP ALU {
    // Put you code here:
 
    //f(x, zx)
-   Not(in=zx, out=zxnot);
-   Widen1to16(in=zxnot, out=zxnot16);
-   And16(a=x,b=zxnot16,out=x1);
+   Mux16(a=x,b=false,sel=zx,out=x1);
 
-   //f(x1, nx)
-   Widen1to16(in=nx,out=nx16);
-   Xor16(a=x1, b=nx16, out=x2);
+   //f(x1,x1not, nx)
+   Not16(in=x1,out=x1not);
+   Mux16(a=x1,b=x1not,sel=nx,out=x2);
 
    //f(y, zy)
-   Not(in=zy,out=zynot);
-   Widen1to16(in=zynot,out=zynot16);
-   And16(a=zynot16, b=y, out=y1);
+   Mux16(a=y,b=false,sel=zy,out=y1);
 
-   //f(y1,ny)
-   Widen1to16(in=ny,out=ny16);
-   Xor16(a=y1, b=ny16, out=y2);
+   //f(y1,y1not,ny)
+   Not16(in=y1,out=y1not);
+   Mux16(a=y1,b=y1not,sel=ny,out=y2);
 
-   //f(x2,f)
-   DMux16(in=x2,sel=f,a=xadd,b=xm);
+   //f(x2,y2)
+   Add16(a=x2,b=y2,out=xyadd);
+   And16(a=x2,b=y2,out=xym);
 
-   //f(y2,f)
-   DMux16(in=y2,sel=f,a=yadd,b=ym);
+  //f(xyadd,xym,f)
+   Mux16(a=xym,b=xyadd,sel=f,out=z);
 
-   //xadd+yadd
-
-   //xm*ym
-
-   //f(xyadd,xym,f)
-
-   //f(z,no)
+   //f(z,znot,no)
+   Not16(in=z,out=znot);
+   Mux16(a=z,b=znot,sel=no,out=z1);
+   And16(a=z1,b=true,out=out);
 
    //zr
+   CheckZero(in=z,out=zr);
 
-   //ng (z[0])
+   //ng
+   CheckNegative(in=z,out=ng);
 
 
 }
