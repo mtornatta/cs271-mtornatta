@@ -25,6 +25,7 @@
   M=D //Set R3 to the value of R1 which in this example is 4
 
 //Multiply by looping addition using value of R3 as a counter
+(Mult)
   @R0 //Loop begins here
   D=M //Get value of R0 which is 10
   @R2
@@ -34,9 +35,10 @@
   M=M-1 //Decrement counter
   D=M
 
-  @11
+  @Mult
   D;JGT //If the counter hasn't run out, loop
 
 //Infinite Loop
-  @20
+(End)
+  @End
   0;JMP
