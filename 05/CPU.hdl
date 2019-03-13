@@ -1,28 +1,28 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
+// by hackAsan and Schocken, MIT Press.
 // File name: projects/05/CPU.hdl
 
 /**
  * The Hack CPU (Central Processing unit), consisting of an ALU,
  * two registers named A and D, and a program counter named PC.
- * The CPU is designed to fetch and execute instructions written in 
+ * The CPU is designed to fetch and execute instructions written in
  * the Hack machine language. In particular, functions as follows:
- * Executes the inputted instruction according to the Hack machine 
+ * Executes the inputted instruction according to the Hack machine
  * language specification. The D and A in the language specification
  * refer to CPU-resident registers, while M refers to the external
- * memory location addressed by A, i.e. to Memory[A]. The inM input 
- * holds the value of this location. If the current instruction needs 
- * to write a value to M, the value is placed in outM, the address 
- * of the target location is placed in the addressM output, and the 
- * writeM control bit is asserted. (When writeM==0, any value may 
- * appear in outM). The outM and writeM outputs are combinational: 
- * they are affected instantaneously by the execution of the current 
- * instruction. The addressM and pc outputs are clocked: although they 
- * are affected by the execution of the current instruction, they commit 
- * to their new values only in the next time step. If reset==1 then the 
- * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
- * than to the address resulting from executing the current instruction. 
+ * memory location addressed by A, i.e. to Memory[A]. The inM input
+ * holds the value of this location. If the current instruction needs
+ * to write a value to M, the value is placed in outM, the address
+ * of the target location is placed in the addressM output, and the
+ * writeM control bit is asserted. (When writeM==0, any value may
+ * appear in outM). The outM and writeM outputs are combinational:
+ * they are affected instantaneously by the execution of the current
+ * instruction. The addressM and pc outputs are clocked: although they
+ * are affected by the execution of the current instruction, they commit
+ * to their new values only in the next time step. If reset==1 then the
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather
+ * than to the address resulting from executing the current instruction.
  */
 
 CHIP CPU {
@@ -34,10 +34,62 @@ CHIP CPU {
                          // the current program (reset==0).
 
     OUT outM[16],        // M value output
-        writeM,          // Write to M? 
+        writeM,          // Write to M?
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    //Invert first bit to use as mux selector bit to check for Hack A
+    Not(in=instruction[15],out=hackA);
+
+    //    --    Hack A Mux   --
+    //If not a Hack A instruction (hackA is 0) alu/M output will be loaded into Reg A
+    //If a Hack A (hackA is 1) the instruction/number is put through to Reg A
+    Mux16(a=ALUout,b=instruction,sel=hackA,out=Aregister);
+
+    //    --   A Register   --
+    //Check if Hack A or if first dest bit is 1 (or third depending on which way you're reading it)
+    Or(a=hackA,b=instruction[5],out=loadA);
+    //Address of M is decided here by A Reg
+    ARegister(in=Aregister,load=loadA,out=A,out[0..14]=addressM);
+
+    //    --    A/M Mux   --
+    //Check if Hack C and check if M is being operated on or not (if a bit is 1 or 0)
+    And(a=instruction[15],b=instruction[12],out=selAM);
+    Mux16(a=A,b=inM,sel=selAM,out=AM);
+
+    //    --    ALU   --
+    //Load data from A,D, or M then perform operations contained in c instruction (bits 6-11)
+    ALU(x=D,y=AM,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=ALUout,out=outM,zr=zr,ng=ng);
+
+    //If Hack C and dest M bit, which is the 3rd dest bit
+    //(or first bit again depending on how you read it) then writeM
+    And(a=instruction[15],b=instruction[3],out=writeM);
+
+    //    --    D Register    --
+    //Check if a Hack C and if dest D bit, which is the 2nd dest bit
+    //(finally they're the same bit read forwards or backwards) then write to D Reg
+    And(a=instruction[15],b=instruction[4],out=loadD);
+    DRegister(in=ALUout,load=loadD,out=D);
+
+    //    --    Jumping   --
+    //Check if the number is above zero
+    Not(in=ng,out=Nng);
+    Not(in=zr,out=Nzr);
+    And(a=Nzr,b=Nng,out=abovezr);
+
+    //Figure out what kind of jump command using jump bits (0-2)
+    And(a=instruction[0], b=abovezr, out=JGT); //JGT if ALUout > 0
+    And(a=instruction[1], b=zr, out=JEQ); //JEQ if ALUout = 0
+    And(a=instruction[2], b=ng, out=JLT); //JLT if ALUout < 0
+    Or(a=JLT, b=JEQ, out=JLE); //JLE if ALUout < or = 0
+    Or(a=JLE, b=JGT, out=JMP); //JMP if all bits are 1
+
+    //    --    PC    --
+    //Check that this is a Hack C instruction
+    And(a=instruction[15], b=JMP, out=jmpinst);
+    //If we should increment jumpinst will be 0
+    Not(in=jmpinst, out=increment);
+    //If we're not loading a jump the pc will continue to increment normally
+    PC(in=A, load=jmpinst, inc=increment, reset=reset, out[0..14]=pc);
 }
