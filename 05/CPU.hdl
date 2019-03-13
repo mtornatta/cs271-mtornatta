@@ -90,6 +90,6 @@ CHIP CPU {
     And(a=instruction[15], b=JMP, out=jmpinst);
     //If we should increment jumpinst will be 0
     Not(in=jmpinst, out=increment);
-    //If we're not loading a jump the pc will continue to increment normally
+    //If we're not loading a jump the pc will continue to increment
     PC(in=A, load=jmpinst, inc=increment, reset=reset, out[0..14]=pc);
 }
